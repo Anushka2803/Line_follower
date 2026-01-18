@@ -1,0 +1,79 @@
+// ----------- Pin Definitions -----------
+
+// IR Sensors
+#define IR_LEFT 2
+#define IR_RIGHT 3
+
+// Motor Driver L298N
+#define ENA 5
+#define IN1 6
+#define IN2 7
+
+#define ENB 9
+#define IN3 10
+#define IN4 11
+
+// Motor speed (0–255)
+int motorSpeed = 150;
+
+void setup() {
+  // IR sensors
+  pinMode(IR_LEFT, INPUT);
+  pinMode(IR_RIGHT, INPUT);
+
+  // Motor pins
+  pinMode(ENA, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+
+  pinMode(ENB, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  int leftSensor = digitalRead(IR_LEFT);
+  int rightSensor = digitalRead(IR_RIGHT);
+
+  Serial.print("Left: ");
+  Serial.print(leftSensor);
+  Serial.print("  Right: ");
+  Serial.println(rightSensor);
+
+  // Both sensors on black line → move forward
+  if (leftSensor == LOW && rightSensor == LOW) {
+    moveForward();
+  }
+  // Left on black, right on white → turn left
+  else if (leftSensor == LOW && rightSensor == HIGH) {
+    turnLeft();
+  }
+  // Left on white, right on black → turn right
+  else if (leftSensor == HIGH && rightSensor == LOW) {
+    turnRight();
+  }
+  // Both on white → stop
+  else {
+    stopMotors();
+  }
+}
+
+// ----------- Motor Functions -----------
+
+void moveForward() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+
+  analogWrite(ENA, motorSpeed);
+  analogWrite(ENB, motorSpeed);
+}
+
+void turnLeft() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW)
